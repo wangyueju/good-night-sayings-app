@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+    <!-- <keep-alive> -->
+    <router-view :getMusic="getMusic" :audioPlayState="audioPlayState"></router-view>
+    <!-- </keep-alive> -->
     <div class="tab-bar">
       <router-link class="tab-bar-item icon-home" tag="div" to="/home">
         <i></i>
@@ -25,11 +25,43 @@
         我的
       </router-link>
     </div>
+
+    <audio
+      v-if="musicSrc"
+      :src="musicSrc"
+      ref="audio"
+      @play="audioPlayState = true"
+      @pause="audioPlayState = false"
+      loop
+    ></audio>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      musicSrc: null,
+      // 记录当前audio的播放暂停状态
+      audioPlayState: false
+    };
+  },
+  methods: {
+    getMusic() {
+      this.musicSrc = "http://101.200.156.176/lixiang.mp3";
+
+      this.$nextTick(() => {
+        // 已经是播放状态 那就暂停
+        if (this.audioPlayState) {
+          this.$refs.audio.pause();
+        } else {
+          // 已经是暂停状态 那就播放
+          this.$refs.audio.play();
+        }
+      });
+    }
+  }
+};
 </script>
 
 <style lang="scss">
@@ -40,6 +72,7 @@ export default {};
   left: 0;
   width: 100vw;
   height: 55px;
+  z-index: 9;
   background-color: rgb(250, 250, 250);
 
   .tab-bar-item {
@@ -95,6 +128,46 @@ export default {};
       color: #ffa200;
       background-color: rgb(231, 231, 231);
     }
+  }
+}
+
+.wd-modal {
+  background: rgba(0, 0, 0, 0.75) !important;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 50px;
+
+  .wd-loading {
+    margin: 0 5px 5px 0;
+    position: relative;
+  }
+}
+
+.wd-input {
+  margin-bottom: 10px;
+}
+.wd-input__inner {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.wd-input::after {
+  height: 5px !important;
+  background-color: #fff !important;
+}
+
+.wd-button.is-info {
+  background-color: #fff !important;
+}
+
+.wd-input__suffix {
+  .wd-input__icon {
+    background-color: rgba(255, 255, 255, 0);
   }
 }
 </style>

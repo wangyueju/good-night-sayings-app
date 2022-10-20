@@ -1,5 +1,6 @@
 <template>
   <div class="home-view">
+    <router-view></router-view>
     <header>
       <div class="title">
         <div class="box">
@@ -24,19 +25,19 @@
       <div class="top2">
         <h2>TOP 2</h2>
         <div class="list">
-          <div class="list1">
+          <div class="list1" @click="goodNight" :class="[nightSrc ? 'nightShow':'']">
             <i></i>
             晚安
           </div>
-          <div class="list2">
+          <div class="list2" @click="getMusic" :class="[audioPlayState ? 'musicShow':'']">
             <i></i>
             音乐
           </div>
-          <div class="list3">
+          <div class="list3" @click="goToNotesView">
             <i></i>
             美文
           </div>
-          <div class="list4">
+          <div class="list4" @click="goToMailView">
             <i></i>
             信箱
           </div>
@@ -46,10 +47,13 @@
     <footer>
       <i></i>
     </footer>
+
+    <audio v-if="nightSrc" :src="nightSrc" autoplay></audio>
   </div>
 </template>
 
 <script>
+
 export default {
   name: "HomeView",
   data() {
@@ -57,9 +61,11 @@ export default {
       today: null,
       quotationsLiat: [],
       num: null,
-      select: null
+      select: null,
+      nightSrc: null
     };
   },
+  props: ["getMusic", "audioPlayState"],
   mounted() {
     this.num = Math.floor(Math.random() * 17) + 3;
 
@@ -69,21 +75,33 @@ export default {
 
     this.$axios
       .get(
-        "api/shengcai/api/mobile/common/findHomeReportList?meetid=1339&currentpage=1&maxresult=20&type=1"
+        "/api/shengcai/api/mobile/common/findHomeReportList?meetid=1339&currentpage=1&maxresult=20&type=1"
       )
       .then(({ data }) => {
         this.quotationsLiat = data.reportlist;
-        console.log(this.quotationsLiat);
+        // console.log(this.quotationsLiat);
         this.select = this.quotationsLiat[this.num].text;
       });
+
   },
-  methods: {},
-  computed: {
-    // select() {
-    //   // let selectData = this.quotationsLiat[num].title
-    //   //   console.log(this.quotationsLiat[this.num]);
-    //   return this.quotationsLiat[this.num];
-    // }
+  methods: {
+    goodNight() {
+      this.nightSrc =
+        "http://mashengcai.oss-cn-beijing.aliyuncs.com/wanan/wangirl1.mp3";
+      setTimeout(() => {
+        this.nightSrc = null;
+      }, 1000);
+    },
+    goToNotesView() {
+      this.$router.push({
+        path: "/notes"
+      });
+    },
+    goToMailView() {
+      this.$router.push({
+        path: "/mail"
+      });
+    }
   }
 };
 </script>
@@ -100,7 +118,7 @@ export default {
     background-image: url("~@/assets/img/home/wanbg.png");
     background-repeat: no-repeat;
     background-position: center center;
-    background-size: contain;
+    background-size: 100%;
 
     .title {
       width: 80vw;
@@ -110,7 +128,7 @@ export default {
       background-image: url("~@/assets/img/home/wancircle.png");
       background-repeat: no-repeat;
       background-position: center center;
-      background-size: contain;
+      background-size: 100%;
 
       .box {
         width: 80vw;
@@ -212,6 +230,16 @@ export default {
             background-size: contain;
           }
         }
+        .nightShow {
+          i {
+            animation: jitter 1s infinite linear;
+          }
+        }
+        .musicShow {
+          i {
+            animation: rotating 1.5s infinite linear;
+          }
+        }
         .list1 {
           i {
             background-image: url("~@/assets/img/home/wanitem1.png");
@@ -251,6 +279,37 @@ export default {
       background-position: center center;
       background-size: contain;
     }
+  }
+}
+
+@keyframes rotating {
+  from {
+    transform: rotateZ(0);
+  }
+  to {
+    transform: rotatez(360deg);
+  }
+}
+
+@keyframes jitter {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(+2px, 0, 0);
+  }
+  30%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(+4px, 0, 0);
+  }
+  50% {
+    transform: translate3d(-4px, 0, 0);
   }
 }
 </style>

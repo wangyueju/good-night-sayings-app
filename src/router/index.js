@@ -9,42 +9,106 @@ import UserView from '../views/UserView/UserView.vue'
 Vue.use(VueRouter)
 
 const routes = [
-    {
-        // 使用动态路由获取当前日期
-        path: '/home',
-        name: 'home',
-        component: HomeView,
-    },
-    {
-        path: '/quotations',
-        name: 'quotations',
-        component: QuotationsView
-    },
-    {
-        path: '/music',
-        name: 'music',
-        component: MusicView
-    },
-    {
-        path: '/dynamic',
-        name: 'dynamic',
-        component: DynamicView
-    },
-    {
-        path: '/user',
-        name: 'user',
-        component: UserView
-    }, 
-    {
-        path: '/',
-        redirect: '/home'  //默认显示
-    }
+  // 自动重定向
+  {
+    path: '',
+    redirect: "/home"
+  },
+  {
+    path: '/',
+    redirect: '/home'  //默认显示
+  },
+  {
+    path: '/home',
+    name: 'home',
+    component: HomeView,
+  },
+  {
+    path: '/quotations',
+    name: 'quotations',
+    component: QuotationsView
+  },
+  {
+    path: '/music',
+    name: 'music',
+    component: MusicView,
+    children: [
+      {
+        path: 'musicradio',
+        name: 'musicradio',
+        component: () => import("../views/MusicView/MusicRadioView.vue"),
+      },
+      {
+        path: 'readingtime',
+        name: 'readingtime',
+        component: () => import("../views/MusicView/ReadingTimeView.vue"),
+        children: [
+          {
+            path: 'readingtimeItem',
+            name: 'readingtimeItem',
+            component: () => import("../views/MusicView/ReadingTimeItemView.vue"),
+          }
+        ]
+      },
+    ]
+  },
+  {
+    path: '/dynamic',
+    name: 'dynamic',
+    component: DynamicView,
+    children: [
+      {
+        path: 'dynamicdetails',
+        name: 'dynamicdetails',
+        component: () => import("../views/DynamicView/DynamicDetailsView.vue"),
+      },
+      {
+        path: 'dynamicmonologue',
+        name: 'dynamicmonologue',
+        component: () => import("../views/DynamicView/DynamicMonologueView.vue"),
+      },
+    ]
+  },
+  {
+    path: '/user',
+    name: 'user',
+    component: UserView,
+    children: [
+      {
+        path: 'useragreement',
+        name: 'useragreement',
+        component: () => import("../views/UserView/UserAgreementView.vue"),
+      },
+      {
+        path: 'userlogin',
+        name: 'userlogin',
+        component: () => import("../views/UserView/UserLoginView.vue"),
+      },
+    ]
+  },
+  {
+    path: '/notes',
+    name: 'notes',
+    component: () => import("../views/HomeView/NotesView.vue"),
+  },
+  {
+    path: '/mail',
+    name: 'mail',
+    component: () => import("../views/HomeView/MailView.vue"),
+    children: [
+      {
+        path: 'creation',
+        name: 'creation',
+        component: () => import("../views/HomeView/CreationView.vue"),
+      }
+    ]
+  },
 ]
 
 const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
-    routes
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes
 })
 
 /*
